@@ -106,6 +106,17 @@ class User(db.Model):
 
         return False
 
+    def serialize(self):
+        """Serialize to dictionary"""
+
+        return {
+            "username": self.username,
+            "password": self.password,
+            "email": self.email,
+            "firstname": self.firstname,
+            "lastname": self.lastname
+        }
+
 def connect_db(app):
     """Connect this database to provided Flask app.
 

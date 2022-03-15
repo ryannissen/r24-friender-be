@@ -42,20 +42,26 @@ def signup():
         db.session.commit()
 
     except IntegrityError:
-        return False
+        return "Username or email already exist"
+
+    serialized = user.serialize()
 
     """Serialize/Jsonify our return object"""
-    return user
+    return (jsonify(user=serialized), 201)
 
 @app.route('/login', methods=["POST"])
-def login(user):
+def login():
     """Handle user login."""
 
-    user = User.authenticate(user.username, user.password)
+    username = request.json["username"]
+    password = request.json["password"]
+
+    user = User.authenticate(username, password)
 
     if user:
-        return user
+        serialized = user.serialize()
+        return (jsonify(user=serialized), 200)
 
     else:
-        return False
+        return "Incorrect username/password"
 
