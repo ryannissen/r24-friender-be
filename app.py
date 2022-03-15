@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify
 import os
 from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, User
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
