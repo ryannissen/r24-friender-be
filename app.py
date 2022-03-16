@@ -19,6 +19,7 @@ app.config['SECRET_KEY'] = 'secret'
 connect_db(app)
 db.create_all()
 
+
 @app.route('/signup', methods=["POST"])
 def signup():
     """Handle user signup.
@@ -51,6 +52,7 @@ def signup():
     """Serialize/Jsonify our return object"""
     return (jsonify(user=serialized), 201)
 
+
 @app.route('/login', methods=["POST"])
 def login():
     """Handle user login."""
@@ -67,6 +69,7 @@ def login():
     else:
         return "Incorrect username/password"
 
+
 @app.route('/profile', methods=["PATCH"])
 def update():
     """Handles updating user from profile"""
@@ -81,12 +84,28 @@ def update():
     interests = request.json["interests"]
     friendradius = request.json["friendradius"]
 
-    user = User.authenticate(username, password)
+    try:
+        user = User.authenticate(username, password)
+    except IntegrityError:
+        print("USER AUTH FAILED")
 
     if user:
-        updateduser = User.update(username, firstname, lastname, email, location, hobbies, interests, friendradius)
-        serialized = updateduser.serialize()
-        return (jsonify(user=serialized), 200)
+        try:
+            updateduser = User.update(
+                username,
+                firstname,
+                lastname,
+                email,
+                location,
+                hobbies,
+                interests,
+                friendradius)
+            
+            serialized = updateduser.serialize()
+            return (jsonify(user=serialized), 200)
+            
+        except IntegrityError:
+            print("UPDATE USER FAILED")
 
     else:
         return "Could not update user"

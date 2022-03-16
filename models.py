@@ -107,13 +107,14 @@ class User(db.Model):
         return False
 
     @classmethod
-    def update(cls, username, firstname, email, location, hobbies, interests, friendradius):
+    def update(cls, username, firstname, lastname, email, location, hobbies, interests, friendradius):
         """Updates current user"""
 
         user = cls.query.filter_by(username=username).first()
 
         if user:
             user.firstname = firstname
+            user.lastname = lastname
             user.email = email
             user.location = location
             user.hobbies = hobbies
@@ -131,7 +132,11 @@ class User(db.Model):
             "password": self.password,
             "email": self.email,
             "firstname": self.firstname,
-            "lastname": self.lastname
+            "lastname": self.lastname,
+            "location": self.location,
+            "hobbies": self.hobbies,
+            "interests": self.interests,
+            "friendradius": self.friendradius,
         }
 
 def connect_db(app):
