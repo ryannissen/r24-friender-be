@@ -106,6 +106,23 @@ class User(db.Model):
 
         return False
 
+    @classmethod
+    def update(cls, username, firstname, email, location, hobbies, interests, friendradius):
+        """Updates current user"""
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            user.firstname = firstname
+            user.email = email
+            user.location = location
+            user.hobbies = hobbies
+            user.interests = interests
+            user.friendradius = friendradius
+
+            db.session.commit()
+            return user
+
     def serialize(self):
         """Serialize to dictionary"""
 

@@ -67,3 +67,26 @@ def login():
     else:
         return "Incorrect username/password"
 
+@app.route('/profile', methods=["PATCH"])
+def update():
+    """Handles updating user from profile"""
+
+    username = request.json["username"]
+    password = request.json["password"]
+    email = request.json["email"]
+    firstname = request.json["firstname"]
+    lastname = request.json["lastname"]
+    location = request.json["location"]
+    hobbies = request.json["hobbies"]
+    interests = request.json["interests"]
+    friendradius = request.json["friendradius"]
+
+    user = User.authenticate(username, password)
+
+    if user:
+        updateduser = User.update(username, firstname, lastname, email, location, hobbies, interests, friendradius)
+        serialized = updateduser.serialize()
+        return (jsonify(user=serialized), 200)
+
+    else:
+        return "Could not update user"
