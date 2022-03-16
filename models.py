@@ -51,7 +51,7 @@ class User(db.Model):
 
     image_url = db.Column(
         db.Text,
-        default="/static/images/default-pic.png",
+        default="./public/6525a08f1df98a2e3a545fe2ace4be47.jpeg",
     )
 
     hobbies = db.Column(
@@ -107,7 +107,7 @@ class User(db.Model):
         return False
 
     @classmethod
-    def update(cls, username, firstname, lastname, email, location, hobbies, interests, friendradius):
+    def update(cls, username, firstname, lastname, email, location, hobbies, interests, friendradius, image_url):
         """Updates current user"""
 
         user = cls.query.filter_by(username=username).first()
@@ -120,6 +120,7 @@ class User(db.Model):
             user.hobbies = hobbies
             user.interests = interests
             user.friendradius = friendradius
+            user.image_url = image_url
 
             db.session.commit()
             return user
@@ -136,6 +137,7 @@ class User(db.Model):
             "hobbies": self.hobbies or "",
             "interests": self.interests or "",
             "friendradius": self.friendradius or 0,
+            "image_url": self.image_url,
         }
 
 def connect_db(app):

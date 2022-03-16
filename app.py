@@ -83,6 +83,7 @@ def update():
     hobbies = request.json["hobbies"]
     interests = request.json["interests"]
     friendradius = request.json["friendradius"]
+    image_url = request.json["image_url"]
 
     try:
         user = User.authenticate(username, password)
@@ -99,7 +100,8 @@ def update():
                 location,
                 hobbies,
                 interests,
-                friendradius)
+                friendradius,
+                image_url)
             
             serialized = updateduser.serialize()
             return (jsonify(user=serialized), 200)
