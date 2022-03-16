@@ -129,14 +129,13 @@ class User(db.Model):
 
         return {
             "username": self.username,
-            "password": self.password,
             "email": self.email,
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "location": self.location,
-            "hobbies": self.hobbies,
-            "interests": self.interests,
-            "friendradius": self.friendradius,
+            "location": self.location or "",
+            "hobbies": self.hobbies or "",
+            "interests": self.interests or "",
+            "friendradius": self.friendradius or 0,
         }
 
 def connect_db(app):
