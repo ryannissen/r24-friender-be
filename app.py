@@ -94,11 +94,15 @@ def update():
 
     image_file = request.files["image_url"]
 
-    upload_file(image_file.filename, "r24-friender-ryan-bucket", f"{username}-profile-image")
+    bucket_name = "r24practicebucket"
+    region = "us-west-1"
+    object_key = f"{username}-profile-image"
+
+    upload_file(image_file, bucket_name, object_key)
+
+    image_url = f"https://{bucket_name}.s3.{region}.amazonaws.com/{object_key}"
 
     """Request.files --> Pull image --> Send image to S3 --> Pull URL from that S3 instance --> image_url = s3_url for database"""
-
-    """image_url = S3_URL"""
 
     try:
         user = User.authenticate(username, password)
@@ -144,8 +148,8 @@ def upload_file(file_name, bucket, object_name=None):
     # Upload the file
     s3_client = boto3.client('s3')
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-        print(response)
+        response = s3_client.upload_fileobj(file_name, bucket, object_name)
+        print("RESPONSE FROM S3", response)
     except ClientError as e:
         logging.error(e)
         return False
