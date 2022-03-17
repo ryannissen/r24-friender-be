@@ -1,8 +1,13 @@
 from flask import Flask, request, jsonify
-import os
 from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, User
 from flask_cors import CORS
+
+"""Boto3 imports"""
+from botocore.exceptions import ClientError
+import boto3
+import os
+import logging
 
 app = Flask(__name__)
 CORS(app)
@@ -74,16 +79,26 @@ def login():
 def update():
     """Handles updating user from profile"""
 
-    username = request.json["username"]
-    password = request.json["password"]
-    email = request.json["email"]
-    firstname = request.json["firstname"]
-    lastname = request.json["lastname"]
-    location = request.json["location"]
-    hobbies = request.json["hobbies"]
-    interests = request.json["interests"]
-    friendradius = request.json["friendradius"]
-    image_url = request.json["image_url"]
+    print('request files imageurl', request.files['image_url'])
+    """request files ImmutableMultiDict([('image_url', <FileStorage: 'happy.jpg' ('image/jpeg')>)])"""
+
+    username = request.form["username"]
+    password = request.form["password"]
+    email = request.form["email"]
+    firstname = request.form["firstname"]
+    lastname = request.form["lastname"]
+    location = request.form["location"]
+    hobbies = request.form["hobbies"]
+    interests = request.form["interests"]
+    friendradius = request.form["friendradius"]
+
+    image_file = request.files["image_url"]
+
+    upload_file(image_file.filename, "r24-friender-ryan-bucket", f"{username}-profile-image")
+
+    """Request.files --> Pull image --> Send image to S3 --> Pull URL from that S3 instance --> image_url = s3_url for database"""
+
+    """image_url = S3_URL"""
 
     try:
         user = User.authenticate(username, password)
@@ -111,3 +126,27 @@ def update():
 
     else:
         return "Could not update user"
+
+
+def upload_file(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    # Upload the file
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+        print(response)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
