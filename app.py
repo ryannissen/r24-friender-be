@@ -77,11 +77,8 @@ def login():
 
 @app.route('/profile', methods=["PATCH"])
 def update():
-    """Handles updating user from profile"""
-
-    print('request files imageurl', request.files['image_url'])
-    """request files ImmutableMultiDict([('image_url', <FileStorage: 'happy.jpg' ('image/jpeg')>)])"""
-
+    """Handles updating user from profile and adds image to s3 bucket"""
+    
     username = request.form["username"]
     password = request.form["password"]
     email = request.form["email"]
