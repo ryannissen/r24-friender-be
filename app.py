@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify
 from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, User
 from flask_cors import CORS
+import os
 
 """Boto3 imports"""
 from botocore.exceptions import ClientError
 import boto3
-import os
 import logging
 
 app = Flask(__name__)
@@ -79,6 +79,7 @@ def login():
 def update():
     """Handles updating user from profile and adds image to s3 bucket"""
     
+    """CR - Backend - Better to be explicit instead of destructure. Could be used by other people/bad actors"""
     username = request.form["username"]
     password = request.form["password"]
     email = request.form["email"]
@@ -91,16 +92,18 @@ def update():
 
     image_file = request.files["image_url"]
 
-    bucket_name = "r24practicebucket"
-    region = "us-west-1"
+    bucket_name = os.environ.get('BUCKET_NAME')
+    region = os.environ.get('REGION')
     object_key = f"{username}-profile-image"
 
     upload_file(image_file, bucket_name, object_key)
 
+    #Look at getting presigned URL
     image_url = f"https://{bucket_name}.s3.{region}.amazonaws.com/{object_key}"
 
     """Request.files --> Pull image --> Send image to S3 --> Pull URL from that S3 instance --> image_url = s3_url for database"""
 
+    #Move to top of function. Should be authorizing user first. Return error/unauth/etc.
     try:
         user = User.authenticate(username, password)
     except IntegrityError:
@@ -128,7 +131,19 @@ def update():
     else:
         return "Could not update user"
 
+@app.route('/cards', methods=["GET"])
+def get_all_users():
+    """Gets all users from database"""
 
+    allUsers = User.getAllUsers()
+
+    serializedUsers = [user.serialize() for user in allUsers]
+
+    serialized = {"users": serializedUsers}
+
+    return (jsonify(serialized), 200)
+
+#Move function to another file
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
@@ -136,11 +151,14 @@ def upload_file(file_name, bucket, object_name=None):
     :param bucket: Bucket to upload to
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
+
+    CR - First parameter should probably be 'file'
     """
 
     # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
+    # CR commented out during CR, probably not needed.
+    # if object_name is None:
+    #     object_name = os.path.basename(file_name)
 
     # Upload the file
     s3_client = boto3.client('s3')
@@ -148,6 +166,7 @@ def upload_file(file_name, bucket, object_name=None):
         response = s3_client.upload_fileobj(file_name, bucket, object_name)
         print("RESPONSE FROM S3", response)
     except ClientError as e:
+        #CR See if this is logging anywhere. Verify what its doing.
         logging.error(e)
         return False
     return True

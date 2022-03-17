@@ -1,6 +1,7 @@
 """SQLAlchemy models for Friender."""
 
 from datetime import datetime
+from flask import jsonify
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -139,6 +140,15 @@ class User(db.Model):
             "friendradius": self.friendradius or 0,
             "image_url": self.image_url,
         }
+
+    @classmethod
+    def getAllUsers(cls):
+        """Gets all users"""
+
+        users = cls.query.all()
+
+        return users
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.
