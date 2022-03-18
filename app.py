@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User
+from models import db, connect_db, User, Likes, Dislikes
 from flask_cors import CORS
 import os
 
@@ -142,6 +142,32 @@ def get_all_users():
     serialized = {"users": serializedUsers}
 
     return (jsonify(serialized), 200)
+
+@app.route('/like', methods=["POST"])
+def like_user():
+    """CurrentUser likes current card user"""
+
+    user_swiping=request.json["user_swiping"]
+    user_being_liked=request.json["user_being_liked"]
+
+    Likes.liking(user_swiping, user_being_liked)
+
+    db.session.commit()
+
+    return "Friend Liked"
+
+@app.route('/dislike', methods=["POST"])
+def dislike_user():
+    """CurrentUser dislikes current card user"""
+    
+    user_swiping=request.json["user_swiping"]
+    user_being_disliked=request.json["user_being_disliked"]
+
+    Dislikes.disliking(user_swiping, user_being_disliked)
+
+    db.session.commit()
+
+    return "Friend Disliked"
 
 #Move function to another file
 def upload_file(file_name, bucket, object_name=None):

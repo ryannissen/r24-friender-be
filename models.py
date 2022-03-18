@@ -168,8 +168,13 @@ class Likes(db.Model):
 
     @classmethod
     def liking(cls, user_swiping, user_being_liked):
-        newLike = Likes(user_swiping, user_being_liked)
+        """Docstring"""
+
+        newLike = Likes(user_swiping=user_swiping, user_being_liked=user_being_liked)
         db.session.add(newLike)
+
+        return newLike
+
 
 class Dislikes(db.Model):
     """Disliked users"""
@@ -190,8 +195,10 @@ class Dislikes(db.Model):
 
     @classmethod
     def disliking(cls, user_swiping, user_being_disliked):
-        newDislike = Dislikes(user_swiping, user_being_disliked)
+        newDislike = Dislikes(user_swiping=user_swiping, user_being_disliked=user_being_disliked)
         db.session.add(newDislike)
+
+        return newDislike
 
 
 def connect_db(app):
