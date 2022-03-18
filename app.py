@@ -177,9 +177,9 @@ def get_all_likes(user):
     allLikes = Likes.getAllLikes(user)
 
     serializedLikes = [like.serialize() for like in allLikes]
-    serialized = {"likes": serializedLikes}
+    # serialized = {"likes": serializedLikes}
 
-    return (jsonify(serialized), 200)
+    return (jsonify(serializedLikes), 200)
 
 @app.route('/alldislikes/<user>', methods=['GET'])
 def get_all_dislikes(user):
@@ -188,9 +188,9 @@ def get_all_dislikes(user):
     allDislikes = Dislikes.getAllDislikes(user)
 
     serializedDislikes = [dislike.serialize() for dislike in allDislikes]
-    serialized = {"dislikes": serializedDislikes}
+    # serialized = {"dislikes": serializedDislikes}
 
-    return (jsonify(serialized), 200)
+    return (jsonify(serializedDislikes), 200)
 
 #Move function to another file
 def upload_file(file_name, bucket, object_name=None):
