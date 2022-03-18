@@ -149,6 +149,50 @@ class User(db.Model):
 
         return users
 
+class Likes(db.Model):
+    """Liked users"""
+
+    __tablename__ = 'likes'
+
+    user_swiping = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    user_being_liked = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    @classmethod
+    def liking(cls, user_swiping, user_being_liked):
+        newLike = Likes(user_swiping, user_being_liked)
+        db.session.add(newLike)
+
+class Dislikes(db.Model):
+    """Disliked users"""
+
+    __tablename__ = 'dislikes'
+
+    user_swiping = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    user_being_disliked = db.Column(
+        db.Text,
+        db.ForeignKey('users.username', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    @classmethod
+    def disliking(cls, user_swiping, user_being_disliked):
+        newDislike = Dislikes(user_swiping, user_being_disliked)
+        db.session.add(newDislike)
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.
