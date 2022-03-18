@@ -175,6 +175,23 @@ class Likes(db.Model):
 
         return newLike
 
+    @classmethod
+    def getAllLikes(cls, username):
+        """Get all likes for current user"""
+
+        print('username', username)
+        likes = cls.query.filter_by(user_swiping=username).all()
+        
+        return likes
+
+    def serialize(self):
+        """Serialize to dictionary"""
+
+        return {
+            "user_swiping": self.user_swiping,
+            "user_being_liked": self.user_being_liked,
+        }
+
 
 class Dislikes(db.Model):
     """Disliked users"""
@@ -199,6 +216,22 @@ class Dislikes(db.Model):
         db.session.add(newDislike)
 
         return newDislike
+
+    @classmethod
+    def getAllDislikes(cls, username):
+        """Get all dislikes for current user"""
+
+        dislikes = cls.query.filter_by(user_swiping=username).all()
+        
+        return dislikes
+
+    def serialize(self):
+        """Serialize to dictionary"""
+
+        return {
+            "user_swiping": self.user_swiping,
+            "user_being_disliked": self.user_being_disliked,
+        }
 
 
 def connect_db(app):

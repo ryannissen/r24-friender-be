@@ -169,6 +169,29 @@ def dislike_user():
 
     return "Friend Disliked"
 
+@app.route('/alllikes/<user>', methods=['GET'])
+def get_all_likes(user):
+    """Get all likes for current user"""
+
+    print("Got to alllikes/user in python app.py")
+    allLikes = Likes.getAllLikes(user)
+
+    serializedLikes = [like.serialize() for like in allLikes]
+    serialized = {"likes": serializedLikes}
+
+    return (jsonify(serialized), 200)
+
+@app.route('/alldislikes/<user>', methods=['GET'])
+def get_all_dislikes(user):
+    """Get all dislikes for current user"""
+
+    allDislikes = Dislikes.getAllDislikes(user)
+
+    serializedDislikes = [dislike.serialize() for dislike in allDislikes]
+    serialized = {"dislikes": serializedDislikes}
+
+    return (jsonify(serialized), 200)
+
 #Move function to another file
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
