@@ -9,6 +9,9 @@ from botocore.exceptions import ClientError
 import boto3
 import logging
 
+database_url = os.environ['DATABASE_URL']
+database_url = database_url.replace('postgres://', 'postgresql://')
+
 app = Flask(__name__)
 CORS(app)
 
@@ -16,7 +19,9 @@ CORS(app)
 # if not set there, use development local db.
 # app.config['SQLALCHEMY_DATABASE_URI'] = (
 #     os.environ['DATABASE_URL'].replace("postgres://", "postgresql://"))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///r24_friender'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = 'secret'
